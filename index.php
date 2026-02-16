@@ -151,6 +151,9 @@ switch ($page) {
                 if (!empty($_FILES['photo']['name'])) {
                     $_POST['photo_path'] = handle_upload($_FILES['photo']);
                 }
+                if (!empty($_FILES['store_cover_image']['name'])) {
+                    $_POST['store_cover_image'] = handle_upload($_FILES['store_cover_image']);
+                }
                 user_update_profile($user['id'], $_POST);
                 $message = 'Profile updated.';
             }
@@ -174,6 +177,7 @@ switch ($page) {
         break;
     case 'student':
         require_role('student');
+        $stores = store_list();
         $products = product_list();
         require __DIR__ . '/src/views/student.php';
         break;

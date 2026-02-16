@@ -8,23 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
             <div class="flex items-center">
-                <div class="bg-gradient-to-r from-orange-500 to-red-500 p-2 rounded-lg">
-                    <i class="fas fa-utensils text-white text-2xl"></i>
-                </div>
-                <span class="ml-3 text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">LCC Foods</span>
+                <span class="ml-3 text-2xl font-bold text-blue-600">LCC Foods</span>
             </div>
             <div class="flex items-center gap-4">
-                <a href="/?page=dashboard" class="text-gray-700 hover:text-orange-500 transition">
+                <a href="/?page=dashboard" class="text-gray-700 hover:text-blue-600 transition">
                     <i class="fas fa-th-large mr-2"></i>Dashboard
                 </a>
-                <a href="/?page=account" class="text-gray-700 hover:text-orange-500 transition">
+                <a href="/?page=account" class="text-gray-700 hover:text-blue-600 transition">
                     <i class="fas fa-user-circle text-2xl"></i>
                 </a>
-                <a href="/?page=logout" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg hover:bg-red-50 transition">
+                <a href="/?page=logout" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition">
                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                 </a>
             </div>
@@ -40,18 +36,92 @@
             </div>
         </div>
 
+        <!-- Stores Section (Horizontal Scroll) -->
+        <?php if (!empty($stores)): ?>
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6"><i class="fas fa-store mr-3 text-blue-600"></i>Featured Stores</h2>
+                <div class="overflow-x-auto pb-4 -mx-4 px-4">
+                    <div class="flex gap-6 min-w-min">
+                        <?php foreach ($stores as $store): ?>
+                            <div class="flex-shrink-0 w-80 bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition group">
+                                <!-- Store Cover Image -->
+                                <div class="relative h-40 bg-gray-200 overflow-hidden cursor-pointer group-hover:scale-105 transition duration-300">
+                                    <?php if (!empty($store['store_cover_image'])): ?>
+                                        <img src="/<?php echo htmlspecialchars($store['store_cover_image']); ?>" 
+                                            class="w-full h-full object-cover" 
+                                            alt="<?php echo htmlspecialchars($store['store_name']); ?>">
+                                    <?php else: ?>
+                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+                                            <i class="fas fa-store text-4xl text-blue-400 opacity-40"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Store Info -->
+                                <div class="p-6">
+                                    <!-- Store Name & Owner -->
+                                    <div class="mb-4">
+                                        <h3 class="text-xl font-bold text-gray-900 mb-1">
+                                            <?php echo htmlspecialchars($store['store_name'] ?? 'Unknown Store'); ?>
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            <i class="fas fa-user mr-1 text-blue-600"></i>
+                                            <?php echo htmlspecialchars($store['first_name'] ?? '') . ' ' . htmlspecialchars($store['last_name'] ?? ''); ?>
+                                        </p>
+                                    </div>
+
+                                    <!-- Store Description -->
+                                    <?php if (!empty($store['store_description'])): ?>
+                                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+                                            <?php echo htmlspecialchars($store['store_description']); ?>
+                                        </p>
+                                    <?php endif; ?>
+
+                                    <!-- GCash Number -->
+                                    <?php if (!empty($store['gcash_number'])): ?>
+                                        <div class="mb-4 pb-4 border-b border-gray-200">
+                                            <p class="text-xs text-gray-600 mb-1">GCash Number</p>
+                                            <div class="flex items-center justify-between">
+                                                <p class="font-mono text-sm font-semibold text-blue-600">
+                                                    <?php echo htmlspecialchars($store['gcash_number']); ?>
+                                                </p>
+                                                <button onclick="copyToClipboard('<?php echo htmlspecialchars($store['gcash_number']); ?>')" class="text-blue-600 hover:text-blue-700 text-xs font-semibold">
+                                                    <i class="fas fa-copy"></i> Copy
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Store Address -->
+                                    <?php if (!empty($store['store_address'])): ?>
+                                        <div class="mb-4">
+                                            <p class="text-xs text-gray-600 mb-1">Address</p>
+                                            <p class="text-sm text-gray-700 line-clamp-2">
+                                                <i class="fas fa-map-marker-alt mr-2 text-blue-600"></i>
+                                                <?php echo htmlspecialchars($store['store_address']); ?>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Search & Filter Bar -->
         <div class="mb-8 flex flex-col md:flex-row gap-4">
             <div class="flex-1 relative">
                 <input type="text" id="searchInput" placeholder="Search products..." 
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                 <i class="fas fa-search absolute right-3 top-4 text-gray-400"></i>
             </div>
             <div class="flex gap-2">
-                <button onclick="filterByPrice('all')" class="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-green-500 transition">
+                <button onclick="filterByPrice('all')" class="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-blue-500 transition">
                     All Prices
                 </button>
-                <button onclick="filterByPrice('low')" class="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-green-500 transition">
+                <button onclick="filterByPrice('low')" class="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-blue-500 transition">
                     Under ₱10
                 </button>
             </div>
@@ -59,7 +129,7 @@
 
         <!-- Products Grid -->
         <?php if (!empty($products)): ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" id="productsGrid">
                 <?php foreach ($products as $product): ?>
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 product-card" data-price="<?php echo $product['price']; ?>" data-name="<?php echo strtolower($product['name']); ?>">
                         <!-- Image -->
@@ -73,9 +143,6 @@
                                     <i class="fas fa-utensils text-5xl opacity-30"></i>
                                 </div>
                             <?php endif; ?>
-                            <div class="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                <i class="fas fa-star mr-1"></i>New
-                            </div>
                             <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition flex items-center justify-center">
                                 <span class="text-white text-sm font-semibold opacity-0 hover:opacity-100 transition">View Details</span>
                             </div>
@@ -83,17 +150,17 @@
 
                         <!-- Content -->
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">
                                 <?php echo htmlspecialchars($product['name']); ?>
                             </h3>
 
                             <!-- Description -->
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                            <p class="text-gray-600 text-sm mb-2 line-clamp-2">
                                 <?php echo htmlspecialchars($product['description']); ?>
                             </p>
 
                             <!-- Vendor/Store Info (if available) -->
-                            <div class="mb-4 pb-4 border-b border-gray-200">
+                            <div class="mb-4 pb-2 border-b border-gray-200">
                                 <p class="text-xs text-gray-500">
                                     <i class="fas fa-store mr-1"></i>
                                      <?php echo htmlspecialchars($product['store_name']); ?>
@@ -102,10 +169,10 @@
 
                             <!-- Price & Action -->
                             <div class="flex items-center justify-between">
-                                <div class="text-2xl font-bold text-green-600">
+                                <div class="text-2xl font-bold text-blue-600">
                                     ₱<?php echo number_format($product['price'], 2); ?>
                                 </div>
-                                <button onclick="openProductModal(<?php echo htmlspecialchars(json_encode($product)); ?>)" class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition font-semibold">
+                                <button onclick="openProductModal(<?php echo htmlspecialchars(json_encode($product)); ?>)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:shadow-lg transition font-semibold">
                                     <i class="fas fa-shopping-cart mr-2"></i>Order
                                 </button>
                             </div>
@@ -132,7 +199,7 @@
     <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
-            <div class="sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 p-6 flex items-center justify-between">
+            <div class="sticky top-0 bg-blue-600 p-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-white" id="modalProductName">Product Name</h2>
                 <button onclick="closeProductModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition">
                     <i class="fas fa-times text-2xl"></i>
@@ -151,7 +218,7 @@
                     <!-- Left Column -->
                     <div>
                         <h3 class="text-sm font-semibold text-gray-600 mb-2 uppercase">Price</h3>
-                        <p class="text-4xl font-bold text-green-600 mb-6" id="modalProductPrice">₱0.00</p>
+                        <p class="text-4xl font-bold text-blue-600 mb-6" id="modalProductPrice">₱0.00</p>
 
                         <h3 class="text-sm font-semibold text-gray-600 mb-2 uppercase">Product ID</h3>
                         <p class="text-lg text-gray-900 mb-6 font-mono" id="modalProductID">#000</p>
@@ -188,8 +255,8 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-4">
-                    <button onclick="addToCart()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transition">
+                <div class="flex gap-4 pt-6 border-t border-gray-200">
+                    <button onclick="addToCart()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition">
                         <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
                     </button>
                     <button onclick="closeProductModal()" class="flex-1 border-2 border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50 transition">
@@ -201,6 +268,15 @@
     </div>
 
     <script>
+        // Copy to Clipboard Function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('GCash number copied to clipboard!');
+            }).catch(function(err) {
+                console.error('Error copying to clipboard:', err);
+            });
+        }
+
         // Product Modal Functions
         function openProductModal(product) {
             document.getElementById('modalProductName').textContent = product.name;

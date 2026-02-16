@@ -42,7 +42,7 @@ function user_create(array $data)
 
 function user_update_profile(int $id, array $data): bool
 {
-    $stmt = db_connect()->prepare('UPDATE users SET first_name = ?, last_name = ?, phone = ?, photo_path = ?, store_name = ?, store_address = ? WHERE id = ?');
+    $stmt = db_connect()->prepare('UPDATE users SET first_name = ?, last_name = ?, phone = ?, photo_path = ?, store_name = ?, store_address = ?, store_cover_image = ?, store_description = ?, gcash_number = ? WHERE id = ?');
     return $stmt->execute([
         $data['first_name'] ?? null,
         $data['last_name'] ?? null,
@@ -50,6 +50,9 @@ function user_update_profile(int $id, array $data): bool
         $data['photo_path'] ?? null,
         $data['store_name'] ?? null,
         $data['store_address'] ?? null,
+        $data['store_cover_image'] ?? null,
+        $data['store_description'] ?? null,
+        $data['gcash_number'] ?? null,
         $id,
     ]);
 }
@@ -155,6 +158,13 @@ function product_delete(int $id)
 {
     $stmt = db_connect()->prepare('DELETE FROM products WHERE id = ?');
     return $stmt->execute([$id]);
+}
+
+// store helpers
+function store_list()
+{
+    $stmt = db_connect()->query('SELECT id, first_name, last_name, store_name, store_address, store_cover_image, gcash_number, store_description, photo_path FROM users WHERE role = "staff" ORDER BY store_name ASC');
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // file upload helper
