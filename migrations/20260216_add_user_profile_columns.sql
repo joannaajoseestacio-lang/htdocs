@@ -1,0 +1,5 @@
+ALTER TABLE users
+    ADD COLUMN first_name VARCHAR(100) NULL,
+    ADD COLUMN last_name VARCHAR(100) NULL,
+    ADD COLUMN phone VARCHAR(20) NULL,
+    ADD COLUMN photo_path VARCHAR(255) NULL;
