@@ -2,47 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FoodApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4 max-w-md">
-        <h1 class="text-2xl mb-4">Register</h1>
-        <form method="post" action="/?page=register" enctype="multipart/form-data">
-            <div class="mb-4">
-                <label class="block mb-1">First Name</label>
-                <input type="text" name="first_name" class="w-full border p-2" />
+<body class="bg-gradient-to-br from-orange-50 to-red-50 min-h-screen py-12 px-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-8">
+                <div class="flex justify-center mb-3">
+                    <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                        <i class="fas fa-user-plus text-white text-2xl"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-white text-center">Create Account</h1>
+                <p class="text-green-100 text-center mt-2">Join FoodApp community</p>
             </div>
-            <div class="mb-4">
-                <label class="block mb-1">Last Name</label>
-                <input type="text" name="last_name" class="w-full border p-2" />
+
+            <!-- Form -->
+            <form method="post" action="/?page=register" enctype="multipart/form-data" class="p-6 md:p-8">
+                <!-- Row 1: Name fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-green-500"></i>First Name
+                        </label>
+                        <input type="text" name="first_name" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                            placeholder="Joanna" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-green-500"></i>Last Name
+                        </label>
+                        <input type="text" name="last_name" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                            placeholder="Estacio" />
+                    </div>
+                </div>
+
+                <!-- Row 2: Contact info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone mr-2 text-green-500"></i>Phone
+                        </label>
+                        <input type="text" name="phone" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                            placeholder="09xxxxxxxxx" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-2 text-green-500"></i>Email
+                        </label>
+                        <input type="email" name="email" required 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                            placeholder="you@example.com" />
+                    </div>
+                </div>
+
+                <!-- Row 3: Password -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-green-500"></i>Password
+                        </label>
+                        <input type="password" name="password" required 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                            placeholder="••••••••" />
+                    </div>
+                </div>
+
+                <!-- Row 4: Role -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-briefcase mr-2 text-green-500"></i>Select Role
+                    </label>
+                    <select name="role" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                        <option value="student">🎓 Student</option>
+                        <option value="staff">👨‍💼 Staff / Store Owner</option>
+                        <option value="admin">👨‍💻 Admin</option>
+                    </select>
+                </div>
+
+                <!-- Conditional fields for staff -->
+                <div id="staffFields" class="hidden">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-5">
+                        <h3 class="font-semibold text-gray-700 mb-4"><i class="fas fa-store mr-2 text-green-500"></i>Store Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Store Name</label>
+                                <input type="text" name="store_name" 
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                                    placeholder="Your Store Name" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Store Address</label>
+                                <input type="text" name="store_address" 
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                                    placeholder="123 Main St, City" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo upload -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-image mr-2 text-green-500"></i>Profile Photo
+                    </label>
+                    <div class="mt-2 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-green-500 transition cursor-pointer">
+                        <input type="file" name="photo" accept="image/*" class="hidden" id="photoInput" />
+                        <label for="photoInput" class="cursor-pointer text-center">
+                            <div class="text-gray-600">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-green-500 mb-2"></i>
+                                <p class="text-sm">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200">
+                    <i class="fas fa-user-check mr-2"></i>Create Account
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="px-6 md:px-8 pb-6 bg-gray-50 border-t border-gray-200">
+                <p class="text-center text-gray-600 text-sm">
+                    Already have an account? 
+                    <a href="/?page=login" class="text-green-500 font-semibold hover:text-emerald-600 transition">Login here</a>
+                </p>
             </div>
-            <div class="mb-4">
-                <label class="block mb-1">Phone</label>
-                <input type="text" name="phone" class="w-full border p-2" />
-            </div>
-            <div class="mb-4">
-                <label class="block mb-1">Photo</label>
-                <input type="file" name="photo" accept="image/*" class="w-full border p-2" />
-            </div>
-            <div class="mb-4">
-                <label class="block mb-1">Email</label>
-                <input type="email" name="email" required class="w-full border p-2" />
-            </div>
-            <div class="mb-4">
-                <label class="block mb-1">Password</label>
-                <input type="password" name="password" required class="w-full border p-2" />
-            </div>
-            <div class="mb-4">
-                <label class="block mb-1">Role</label>
-                <select name="role" class="w-full border p-2">
-                    <option value="student">Student</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2">Register</button>
-        </form>
+        </div>
     </div>
+
+    <script>
+        const roleSelect = document.querySelector('select[name="role"]');
+        const staffFields = document.getElementById('staffFields');
+        
+        function toggleStaffFields() {
+            if (roleSelect.value === 'staff') {
+                staffFields.classList.remove('hidden');
+            } else {
+                staffFields.classList.add('hidden');
+            }
+        }
+        
+        roleSelect.addEventListener('change', toggleStaffFields);
+        toggleStaffFields();
+    </script>
 </body>
 </html>

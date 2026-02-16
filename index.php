@@ -58,6 +58,7 @@ switch ($page) {
             if (!empty($_FILES['photo']['name'])) {
                 $_POST['photo_path'] = handle_upload($_FILES['photo']);
             }
+            // store details only relevant for staff; can be null
             user_create($_POST);
             header('Location: /?page=login');
             exit;
@@ -146,7 +147,7 @@ switch ($page) {
             $user = auth_user();
 
             // profile update
-            if (isset($_POST['first_name']) || isset($_FILES['photo'])) {
+            if (isset($_POST['first_name']) || isset($_FILES['photo']) || isset($_POST['store_name']) || isset($_POST['store_address'])) {
                 if (!empty($_FILES['photo']['name'])) {
                     $_POST['photo_path'] = handle_upload($_FILES['photo']);
                 }
@@ -173,7 +174,8 @@ switch ($page) {
         break;
     case 'student':
         require_role('student');
-        echo '<h2>Student Area</h2>';
+        $products = product_list();
+        require __DIR__ . '/src/views/student.php';
         break;
     default:
         require __DIR__ . '/src/views/home.php';

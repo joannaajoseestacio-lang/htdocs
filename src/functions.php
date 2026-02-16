@@ -26,7 +26,7 @@ function user_find_by_email(string $email)
 
 function user_create(array $data)
 {
-    $stmt = db_connect()->prepare('INSERT INTO users (first_name, last_name, email, password, role, phone, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmt = db_connect()->prepare('INSERT INTO users (first_name, last_name, email, password, role, phone, photo_path, store_name, store_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
     return $stmt->execute([
         $data['first_name'] ?? null,
         $data['last_name'] ?? null,
@@ -35,17 +35,21 @@ function user_create(array $data)
         $data['role'],
         $data['phone'] ?? null,
         $data['photo_path'] ?? null,
+        ($data['role'] === 'staff' ? ($data['store_name'] ?? null) : null),
+        ($data['role'] === 'staff' ? ($data['store_address'] ?? null) : null),
     ]);
 }
 
 function user_update_profile(int $id, array $data): bool
 {
-    $stmt = db_connect()->prepare('UPDATE users SET first_name = ?, last_name = ?, phone = ?, photo_path = ? WHERE id = ?');
+    $stmt = db_connect()->prepare('UPDATE users SET first_name = ?, last_name = ?, phone = ?, photo_path = ?, store_name = ?, store_address = ? WHERE id = ?');
     return $stmt->execute([
         $data['first_name'] ?? null,
         $data['last_name'] ?? null,
         $data['phone'] ?? null,
         $data['photo_path'] ?? null,
+        $data['store_name'] ?? null,
+        $data['store_address'] ?? null,
         $id,
     ]);
 }
@@ -53,26 +57,86 @@ function user_update_profile(int $id, array $data): bool
 // product helpers
 function product_list()
 {
-    $stmt = db_connect()->query('SELECT * FROM products ORDER BY created_at DESC');
+    // Build query based on available columns
+    $query = 'SELECT p.*';
+    
+    // Check if user_id column exists by trying to fetch count first
+    $checkStmt = db_connect()->query("SHOW COLUMNS FROM products LIKE 'user_id'");
+    $hasUserId = $checkStmt->rowCount() > 0;
+    
+    if ($hasUserId) {
+        $checkName = db_connect()->query("SHOW COLUMNS FROM users LIKE 'store_name'");
+        if ($checkName->rowCount() > 0) {
+            $query = 'SELECT p.*, IFNULL(u.store_name, "Unknown Store") as store_name, u.store_address FROM products p LEFT JOIN users u ON p.user_id = u.id';
+        } else {
+            $query = 'SELECT p.* FROM products p';
+        }
+    } else {
+        $query = 'SELECT p.* FROM products p';
+    }
+    
+    $query .= ' ORDER BY p.created_at DESC';
+    $stmt = db_connect()->query($query);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function product_find(int $id)
 {
-    $stmt = db_connect()->prepare('SELECT * FROM products WHERE id = ?');
+    // Check if user_id column exists
+    $checkStmt = db_connect()->query("SHOW COLUMNS FROM products LIKE 'user_id'");
+    $hasUserId = $checkStmt->rowCount() > 0;
+    
+    if ($hasUserId) {
+        $checkName = db_connect()->query("SHOW COLUMNS FROM users LIKE 'store_name'");
+        if ($checkName->rowCount() > 0) {
+            $stmt = db_connect()->prepare('SELECT p.*, IFNULL(u.store_name, "Unknown Store") as store_name, u.store_address FROM products p LEFT JOIN users u ON p.user_id = u.id WHERE p.id = ?');
+        } else {
+            $stmt = db_connect()->prepare('SELECT p.* FROM products p WHERE p.id = ?');
+        }
+    } else {
+        $stmt = db_connect()->prepare('SELECT p.* FROM products p WHERE p.id = ?');
+    }
+    
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function product_create(array $data)
 {
-    $stmt = db_connect()->prepare('INSERT INTO products (name, description, price, image_path) VALUES (?, ?, ?, ?)');
-    return $stmt->execute([
-        $data['name'],
-        $data['description'],
-        $data['price'],
-        $data['image_path'] ?? null,
-    ]);
+    $user = auth_user();
+    
+    // Check if user_id and image_path columns exist
+    $checkUserId = db_connect()->query("SHOW COLUMNS FROM products LIKE 'user_id'");
+    $hasUserId = $checkUserId->rowCount() > 0;
+    
+    $checkImage = db_connect()->query("SHOW COLUMNS FROM products LIKE 'image_path'");
+    $hasImage = $checkImage->rowCount() > 0;
+    
+    if ($hasUserId && $hasImage) {
+        $stmt = db_connect()->prepare('INSERT INTO products (user_id, name, description, price, image_path) VALUES (?, ?, ?, ?, ?)');
+        return $stmt->execute([
+            $user['id'] ?? null,
+            $data['name'],
+            $data['description'],
+            $data['price'],
+            $data['image_path'] ?? null,
+        ]);
+    } elseif ($hasImage) {
+        $stmt = db_connect()->prepare('INSERT INTO products (name, description, price, image_path) VALUES (?, ?, ?, ?)');
+        return $stmt->execute([
+            $data['name'],
+            $data['description'],
+            $data['price'],
+            $data['image_path'] ?? null,
+        ]);
+    } else {
+        $stmt = db_connect()->prepare('INSERT INTO products (name, description, price) VALUES (?, ?, ?)');
+        return $stmt->execute([
+            $data['name'],
+            $data['description'],
+            $data['price'],
+        ]);
+    }
 }
 
 function product_update(int $id, array $data)
